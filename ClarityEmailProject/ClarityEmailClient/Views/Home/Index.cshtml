@@ -1,0 +1,83 @@
+﻿@model ClarityEmailProject.Models.EmailMessage
+@{
+    ViewData["Title"] = "Send Email";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Send Email</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="FromName" class="control-label"></label>
+                                    <input asp-for="FromName" class="form-control" />
+                                    <span asp-validation-for="FromName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="FromEmail" class="control-label"></label>
+                                    <input asp-for="FromEmail" class="form-control" />
+                                    <span asp-validation-for="FromEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ToName" class="control-label"></label>
+                                    <input asp-for="ToName" class="form-control" />
+                                    <span asp-validation-for="ToName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="ToEmail" class="control-label"></label>
+                                    <input asp-for="ToEmail" class="form-control" />
+                                    <span asp-validation-for="ToEmail" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Subject" class="control-label"></label>
+                            <input asp-for="Subject" class="form-control" />
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Body" class="control-label"></label>
+                            <textarea asp-for="Body" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Body" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Send Email</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
