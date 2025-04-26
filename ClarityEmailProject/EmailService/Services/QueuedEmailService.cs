@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
 using System.Net;
+using EmailService.BusinessObjects;
 
 namespace EmailService.Services
 {
@@ -44,6 +45,7 @@ namespace EmailService.Services
             return message.Id;
         }
 
+
         /// <summary>
         /// Adds a message to a queue for background processing
         /// </summary>
@@ -53,7 +55,7 @@ namespace EmailService.Services
             _processing = true;
 
             // search queue for messages that have not been sent successfully and have less than 3 attempts
-            var queue = _dbContext.SendAttempts.Where(a => !a.Successful && a.SendAttempts < _emailSettings.MaxSendAttempts);
+            var queue = _dbContext.SendAttempts.Where(a => !a.Successful && a.SendAttempts < _emailSettings.MaxSendAttempts).ToList();
 
             foreach (var sendAttempt in queue)
             {
@@ -129,6 +131,21 @@ namespace EmailService.Services
             }
 
             return response;
+        }
+
+
+        /// <summary>
+        /// Gets status information for an email message
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
+        public async Task<MessageStatus> GetMessageStatus(int messageId)
+        {
+            return new MessageStatus()
+            {
+                Message = await _dbContext.Messages.FindAsync(messageId),
+                SendAttempts = await _dbContext.SendAttempts.Where(s => s.MessageId == messageId).ToListAsync()
+            };
         }
     }
 }

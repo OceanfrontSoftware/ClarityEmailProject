@@ -1,4 +1,6 @@
-﻿namespace EmailService.DataObjects
+﻿using EmailService.DataObjects;
+
+namespace EmailService.BusinessObjects
 {
     public class SendEmailResponse
     {

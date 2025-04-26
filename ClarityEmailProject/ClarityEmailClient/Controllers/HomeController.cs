@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Net.Mail;
 using ClarityEmailProject.Models;
+using EmailService.BusinessObjects;
 using EmailService.DataObjects;
 using EmailService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -41,18 +43,19 @@ namespace ClarityEmailProject.Controllers
                     ToName = emailMessage.ToName,
                     ToEmail = emailMessage.ToEmail,
                     Subject = emailMessage.Subject,
-                    Body = emailMessage.Body
+                    Body = emailMessage.Body,
+                    Submitted = DateTime.Now
                 };
 
-                // Send the email
+                // Queue the email
                 var messageId = await _emailService.AddMessageToQueue(message);
 
                 // Log success
                 _logger.LogInformation($"Email sent successfully. Message ID: {messageId}");
 
                 // Show success message
-                TempData["SuccessMessage"] = "Email sent successfully!";
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Your email has been queued for delivery";
+                return RedirectToAction(nameof(Confirmation), new { id = messageId });
             }
             catch (Exception ex)
             {
@@ -63,6 +66,19 @@ namespace ClarityEmailProject.Controllers
                 ModelState.AddModelError("", "An error occurred while sending the email. Please try again later.");
                 return View(emailMessage);
             }
+        }
+
+
+        /// <summary>
+        /// Display information about the queued email message
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Confirmation(int id)
+        {
+            var status = await _emailService.GetMessageStatus(id);
+            return View(status);
+
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

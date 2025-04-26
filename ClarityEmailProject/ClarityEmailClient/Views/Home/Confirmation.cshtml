@@ -1,0 +1,100 @@
+﻿@model MessageStatus
+@{
+    ViewData["Title"] = "Email Message Status";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Email Message Status</h2>
+                    <a href="@Url.Action("Confirmation", new { id = Model.Message.Id })" class="btn btn-primary">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- Message Details -->
+                    <div class="mb-4">
+                        <h4>Message Details</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">From:</dt>
+                                    <dd class="col-sm-8">@Model.Message.FromName &lt;@Model.Message.FromEmail&gt;</dd>
+
+                                    <dt class="col-sm-4">To:</dt>
+                                    <dd class="col-sm-8">@Model.Message.ToName &lt;@Model.Message.ToEmail&gt;</dd>
+
+                                    <dt class="col-sm-4">Subject:</dt>
+                                    <dd class="col-sm-8">@Model.Message.Subject</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-6">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Submitted:</dt>
+                                    <dd class="col-sm-8">@Model.Message.Submitted.ToString("g")</dd>
+
+                                    <dt class="col-sm-4">Attempts:</dt>
+                                    <dd class="col-sm-8">@Model.SendAttempts.Count</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Send Attempts Table -->
+                    <div>
+                        <h4>Send Attempts</h4>
+                        @if (Model.SendAttempts.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>Status</th>
+                                            <th>Error Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var attempt in Model.SendAttempts.OrderByDescending(a => a.DateTime))
+                                        {
+                                            <tr>
+                                                <td>@(attempt.DateTime?.ToString("g") ?? "N/A")</td>
+                                                <td>
+                                                    @if (!attempt.DateTime.HasValue)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            Queued
+                                                        </span>
+                                                    } else {
+                                                        <span class="badge @(attempt.Successful ? "bg-success" : "bg-danger")">
+                                                            @(attempt.Successful ? "Success" : "Failed")
+                                                        </span>
+                                                    }
+                                                </td>
+                                                <td>@(attempt.ErrorMessage ?? "N/A")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                No send attempts recorded yet.
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+}
+
+
