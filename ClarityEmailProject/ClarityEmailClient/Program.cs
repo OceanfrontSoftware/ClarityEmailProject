@@ -1,3 +1,4 @@
+using EmailService;
 using EmailService.DataObjects;
 using EmailService.Services;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// configuration 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 // add database context
 builder.Services.AddDbContext<EmailDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // add email processing service
-builder.Services.AddScoped<IEmailService, EmailProcessingService>();
+builder.Services.AddScoped<IQueuedEmailService, QueuedEmailService>();
+
+// add email sending background service
+builder.Services.AddHostedService<EmailBackgroundService>();
 
 var app = builder.Build();
 

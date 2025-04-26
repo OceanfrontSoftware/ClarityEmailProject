@@ -9,9 +9,9 @@ namespace ClarityEmailProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IEmailService _emailService;
+        private readonly IQueuedEmailService _emailService;
 
-        public HomeController(ILogger<HomeController> logger, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IQueuedEmailService emailService)
         {
             _logger = logger;
             _emailService = emailService;
@@ -45,7 +45,7 @@ namespace ClarityEmailProject.Controllers
                 };
 
                 // Send the email
-                var messageId = await _emailService.SendEmailAsync(message);
+                var messageId = await _emailService.AddMessageToQueue(message);
 
                 // Log success
                 _logger.LogInformation($"Email sent successfully. Message ID: {messageId}");

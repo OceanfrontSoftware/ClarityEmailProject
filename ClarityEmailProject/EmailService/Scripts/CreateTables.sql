@@ -7,26 +7,17 @@ CREATE TABLE [dbo].[Messages] (
     [ToEmail] NVARCHAR(255) NOT NULL,
     [Subject] NVARCHAR(200) NOT NULL,
     [Body] NVARCHAR(MAX) NOT NULL,
+    [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    [Status] NVARCHAR(20) NOT NULL DEFAULT 'Pending',
     CONSTRAINT [PK_Messages] PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
--- Create SendAttempts table
-CREATE TABLE [dbo].[SendAttempts] (
-    [Id] INT IDENTITY (1, 1) NOT NULL,
-    [MessageId] INT NOT NULL,
-    [DateTime] DATETIME2 NOT NULL,
-    [Successful] BIT NOT NULL,
-    [ErrorMessage] NVARCHAR(MAX) NULL,
-    CONSTRAINT [PK_SendAttempts] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_SendAttempts_Messages] FOREIGN KEY ([MessageId]) 
-        REFERENCES [dbo].[Messages] ([Id]) ON DELETE CASCADE
+
+CREATE TABLE SendAttempts (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    MessageId INT NOT NULL,
+    DateTime DATETIME NULL,
+    Successful BIT NOT NULL,
+    ErrorMessage NVARCHAR(MAX) NULL,
+    SendAttempts INT NOT NULL
 );
-
--- Create indexes
-CREATE NONCLUSTERED INDEX [IX_SendAttempts_MessageId] 
-    ON [dbo].[SendAttempts] ([MessageId] ASC);
-
--- Add default constraint for DateTime
-ALTER TABLE [dbo].[SendAttempts] 
-    ADD CONSTRAINT [DF_SendAttempts_DateTime] 
-    DEFAULT (GETUTCDATE()) FOR [DateTime]; 

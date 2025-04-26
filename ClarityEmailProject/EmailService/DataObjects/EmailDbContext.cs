@@ -9,6 +9,7 @@ namespace EmailService.DataObjects
         }
 
         public DbSet<Message> Messages { get; set; }
+        public DbSet<SendAttempt> SendAttempts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
