@@ -10,5 +10,7 @@ namespace EmailService.Services
         Task ProcessMessageQueueAsync();
 
         Task<MessageStatus> GetMessageStatus(int messageId);
+
+        Task Retry(int messageId);
     }
 } 

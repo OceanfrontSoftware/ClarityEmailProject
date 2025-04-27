@@ -144,8 +144,25 @@ namespace EmailService.Services
             return new MessageStatus()
             {
                 Message = await _dbContext.Messages.FindAsync(messageId),
-                SendAttempts = await _dbContext.SendAttempts.Where(s => s.MessageId == messageId).ToListAsync()
+                SendAttempts = await _dbContext.SendAttempts.FirstOrDefaultAsync(s => s.MessageId == messageId)
             };
+        }
+
+
+        /// <summary>
+        /// Reset the send attempts so that a failed email will try to be sent again
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <returns></returns>
+        public async Task Retry(int messageId)
+        {
+            var attempt = await _dbContext.SendAttempts.FirstOrDefaultAsync(s => s.MessageId == messageId);
+            if (attempt == null)
+                return;
+
+            attempt.SendAttempts = 0;
+            _dbContext.SendAttempts.Update(attempt);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

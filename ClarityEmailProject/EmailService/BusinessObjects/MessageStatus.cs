@@ -6,6 +6,6 @@ namespace EmailService.BusinessObjects
     {
         public Message Message { get; set; }
 
-        public List<SendAttempt> SendAttempts { get; set; } = new List<SendAttempt>();
+        public SendAttempt SendAttempts { get; set; }
     }
 }

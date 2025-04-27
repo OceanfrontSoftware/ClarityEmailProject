@@ -78,6 +78,17 @@ namespace ClarityEmailProject.Controllers
         {
             var status = await _emailService.GetMessageStatus(id);
             return View(status);
+        }
+
+        /// <summary>
+        /// Try to send a failed email again
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Retry(int id)
+        {
+            await _emailService.Retry(id);
+            return RedirectToAction(nameof(Confirmation), new { id = id });
 
         }
 

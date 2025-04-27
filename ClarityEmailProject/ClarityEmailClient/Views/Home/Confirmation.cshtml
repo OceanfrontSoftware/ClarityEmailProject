@@ -12,6 +12,9 @@
                     <a href="@Url.Action("Confirmation", new { id = Model.Message.Id })" class="btn btn-primary">
                         <i class="bi bi-arrow-clockwise"></i> Refresh
                     </a>
+                    <a href="@Url.Action("Retry", new { id = Model.Message.Id })" class="btn btn-success">
+                        <i class="bi bi-arrow-clockwise"></i> Retry
+                    </a>
                 </div>
                 <div class="card-body">
                     <!-- Message Details -->
@@ -36,7 +39,7 @@
                                     <dd class="col-sm-8">@Model.Message.Submitted.ToString("g")</dd>
 
                                     <dt class="col-sm-4">Attempts:</dt>
-                                    <dd class="col-sm-8">@Model.SendAttempts.Count</dd>
+                                    <dd class="col-sm-8">@Model.SendAttempts?.SendAttempts</dd>
                                 </dl>
                             </div>
                         </div>
@@ -45,8 +48,10 @@
                     <!-- Send Attempts Table -->
                     <div>
                         <h4>Send Attempts</h4>
-                        @if (Model.SendAttempts.Any())
+                        @if (Model.SendAttempts != null)
                         {
+                            var attempt = Model.SendAttempts;
+
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
@@ -57,25 +62,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var attempt in Model.SendAttempts.OrderByDescending(a => a.DateTime))
-                                        {
-                                            <tr>
-                                                <td>@(attempt.DateTime?.ToString("g") ?? "N/A")</td>
-                                                <td>
-                                                    @if (!attempt.DateTime.HasValue)
-                                                    {
-                                                        <span class="badge bg-info">
-                                                            Queued
-                                                        </span>
-                                                    } else {
-                                                        <span class="badge @(attempt.Successful ? "bg-success" : "bg-danger")">
-                                                            @(attempt.Successful ? "Success" : "Failed")
-                                                        </span>
-                                                    }
-                                                </td>
-                                                <td>@(attempt.ErrorMessage ?? "N/A")</td>
-                                            </tr>
-                                        }
+                                        <tr>
+                                            <td>@(attempt.DateTime?.ToString("g") ?? "N/A")</td>
+                                            <td>
+                                                @if (!attempt.DateTime.HasValue)
+                                                {
+                                                    <span class="badge bg-info">
+                                                        Queued
+                                                    </span>
+                                                } else {
+                                                    <span class="badge @(attempt.Successful ? "bg-success" : "bg-danger")">
+                                                        @(attempt.Successful ? "Success" : "Failed")
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>@(attempt.ErrorMessage ?? "N/A")</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
